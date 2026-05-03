@@ -67,6 +67,7 @@ export class MetronomeEngine {
   setPattern(pattern: Pattern): void { this.pattern = pattern; }
   setMasterVolume(v: number): void {
     this.masterVolume = v;
+    this.masterGain.gain.setValueAtTime(v, this.ctx.currentTime);
   }
 
   getCurrentAudioTime(): number {
