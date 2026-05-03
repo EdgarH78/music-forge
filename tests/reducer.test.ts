@@ -91,3 +91,46 @@ describe('setPatternLength', () => {
     expect(next.settings.pattern.length).toBe(256);
   });
 });
+
+describe('cycleStep', () => {
+  it('mute → normal', () => {
+    const next = reducer(initialState, { type: 'cycleStep', index: 0 });
+    expect(next.settings.pattern.steps[0]).toBe('normal');
+  });
+
+  it('normal → accent', () => {
+    const after1 = reducer(initialState, { type: 'cycleStep', index: 0 });
+    const after2 = reducer(after1, { type: 'cycleStep', index: 0 });
+    expect(after2.settings.pattern.steps[0]).toBe('accent');
+  });
+
+  it('accent → mute (cycle wraps)', () => {
+    const a1 = reducer(initialState, { type: 'cycleStep', index: 0 });
+    const a2 = reducer(a1, { type: 'cycleStep', index: 0 });
+    const a3 = reducer(a2, { type: 'cycleStep', index: 0 });
+    expect(a3.settings.pattern.steps[0]).toBe('mute');
+  });
+
+  it('only mutates the targeted index', () => {
+    const next = reducer(initialState, { type: 'cycleStep', index: 5 });
+    expect(next.settings.pattern.steps[0]).toBe('mute');
+    expect(next.settings.pattern.steps[5]).toBe('normal');
+  });
+
+  it('no-op when index is out of range', () => {
+    const next = reducer(initialState, { type: 'cycleStep', index: 999 });
+    expect(next).toBe(initialState);
+  });
+});
+
+describe('setStep', () => {
+  it('sets to specific state', () => {
+    const next = reducer(initialState, { type: 'setStep', index: 3, state: 'accent' });
+    expect(next.settings.pattern.steps[3]).toBe('accent');
+  });
+
+  it('no-op when index is out of range', () => {
+    const next = reducer(initialState, { type: 'setStep', index: -1, state: 'accent' });
+    expect(next).toBe(initialState);
+  });
+});
