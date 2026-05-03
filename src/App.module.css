@@ -1,0 +1,9 @@
+.app {
+  font-family: system-ui, sans-serif;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  color: #e6e6e6;
+  background: #1a1d23;
+  min-height: 100vh;
+}
