@@ -13,6 +13,7 @@ export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const engine = useMetronomeEngine();
   const [, force] = useState(0);
+  const [audioBlocked, setAudioBlocked] = useState(false);
 
   useSyncEngine(engine, state.settings);
 
@@ -26,14 +27,26 @@ export default function App() {
   }, [state.library]);
 
   const togglePlay = async () => {
-    if (engine.isPlaying()) engine.stop();
-    else await engine.start();
+    try {
+      if (engine.isPlaying()) engine.stop();
+      else await engine.start();
+      setAudioBlocked(false);
+    } catch {
+      setAudioBlocked(true);
+    }
     force((n) => n + 1);
   };
 
   return (
     <main className={styles.app}>
-      <h1>Music Forge — Metronome</h1>
+      <h1 className={styles.heading}>Music Forge — Metronome</h1>
+
+      {audioBlocked && (
+        <div className={styles.banner} onClick={() => setAudioBlocked(false)}>
+          Click anywhere to enable audio.
+        </div>
+      )}
+
       <TransportControls
         bpm={state.settings.bpm}
         masterVolume={state.settings.masterVolume}
@@ -41,19 +54,23 @@ export default function App() {
         onPlayToggle={togglePlay}
         dispatch={dispatch}
       />
+
       <MeterControls pattern={state.settings.pattern} dispatch={dispatch} />
+
       <PatternGrid
-          pattern={state.settings.pattern}
-          bpm={state.settings.bpm}
-          engine={engine}
-          isPlaying={engine.isPlaying()}
-          dispatch={dispatch}
-        />
+        pattern={state.settings.pattern}
+        bpm={state.settings.bpm}
+        engine={engine}
+        isPlaying={engine.isPlaying()}
+        dispatch={dispatch}
+      />
+
       <PatternLibrary
         library={state.library}
         currentPatternName={state.settings.pattern.name}
         dispatch={dispatch}
       />
+
       <KeyboardHandler bpm={state.settings.bpm} onPlayToggle={togglePlay} dispatch={dispatch} />
     </main>
   );
