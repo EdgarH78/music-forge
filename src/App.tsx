@@ -5,6 +5,7 @@ import { loadLibrary, saveLibrary } from './state/persistence';
 import { useMetronomeEngine, useSyncEngine } from './hooks/useEngineSync';
 import { TransportControls } from './components/TransportControls';
 import { MeterControls } from './components/MeterControls';
+import { PatternGrid } from './components/PatternGrid';
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -39,6 +40,7 @@ export default function App() {
         dispatch={dispatch}
       />
       <MeterControls pattern={state.settings.pattern} dispatch={dispatch} />
+      <PatternGrid pattern={state.settings.pattern} dispatch={dispatch} />
     </main>
   );
 }

@@ -1,0 +1,26 @@
+.cell {
+  width: 36px;
+  height: 56px;
+  border: 1px solid #3a3f48;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 0.7rem;
+  color: #888;
+  transition: background 0.08s ease-out;
+}
+
+.cell:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.mute { background: #2a2e36; }
+.normal { background: #4a90e2; color: white; }
+.accent { background: #f5a623; color: #1a1d23; }
+
+.downbeatBorder { border-left: 3px solid #50c878; }
+
+.number { pointer-events: none; }
