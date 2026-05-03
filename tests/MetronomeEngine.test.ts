@@ -126,3 +126,47 @@ describe('MetronomeEngine lifecycle', () => {
     expect(() => engine.stop()).not.toThrow();
   });
 });
+
+describe('MetronomeEngine visibility handling', () => {
+  beforeEach(() => {
+    // Reset document.hidden to false between tests since it persists on the global document.
+    Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+  });
+
+  it('uses 100ms schedule-ahead in foreground', () => {
+    const ctx = new FakeAudioContext();
+    const engine = new MetronomeEngine(ctx as unknown as AudioContext);
+    expect(engine.getScheduleAheadSecondsForTest()).toBeCloseTo(0.1, 10);
+  });
+
+  it('switches to 400ms when document.hidden becomes true', () => {
+    const ctx = new FakeAudioContext();
+    const engine = new MetronomeEngine(ctx as unknown as AudioContext);
+    Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(engine.getScheduleAheadSecondsForTest()).toBeCloseTo(0.4, 10);
+  });
+
+  it('switches back to 100ms when document.hidden becomes false', () => {
+    const ctx = new FakeAudioContext();
+    const engine = new MetronomeEngine(ctx as unknown as AudioContext);
+    Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+    Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(engine.getScheduleAheadSecondsForTest()).toBeCloseTo(0.1, 10);
+  });
+});
+
+describe('MetronomeEngine setMasterVolume', () => {
+  it('updates master gain at audioContext.currentTime', () => {
+    const ctx = new FakeAudioContext();
+    const engine = new MetronomeEngine(ctx as unknown as AudioContext);
+    ctx.advanceTime(2.0);
+    engine.setMasterVolume(0.3);
+    const masterGain = ctx.gainNodes[0] as unknown as { gain: { _calls: { value: number; when: number }[] } };
+    const lastCall = masterGain.gain._calls[masterGain.gain._calls.length - 1];
+    expect(lastCall.value).toBeCloseTo(0.3, 5);
+    expect(lastCall.when).toBeCloseTo(2.0, 5);
+  });
+});

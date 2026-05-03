@@ -4,7 +4,7 @@ import { scheduleVoice } from './voices';
 
 const TICK_INTERVAL_MS = 25;
 const SCHEDULE_AHEAD_FOREGROUND_S = 0.1;
-// const SCHEDULE_AHEAD_BACKGROUND_S = 0.4; // used in Task 18
+const SCHEDULE_AHEAD_BACKGROUND_S = 0.4;
 
 export interface ScheduledStepEvent {
   stepIndex: number;
@@ -27,11 +27,18 @@ export class MetronomeEngine {
   private scheduleAheadS = SCHEDULE_AHEAD_FOREGROUND_S;
   private masterGain: GainNode;
 
+  private handleVisibilityChange = (): void => {
+    this.scheduleAheadS = document.hidden
+      ? SCHEDULE_AHEAD_BACKGROUND_S
+      : SCHEDULE_AHEAD_FOREGROUND_S;
+  };
+
   constructor(ctx: AudioContext) {
     this.ctx = ctx;
     this.masterGain = ctx.createGain();
     this.masterGain.connect(ctx.destination);
     this.masterGain.gain.setValueAtTime(this.masterVolume, ctx.currentTime);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
   isPlaying(): boolean {
@@ -69,6 +76,16 @@ export class MetronomeEngine {
   subscribeToScheduledSteps(cb: ScheduledStepListener): () => void {
     this.listeners.add(cb);
     return () => { this.listeners.delete(cb); };
+  }
+
+  /** @internal — exposed for tests only */
+  getScheduleAheadSecondsForTest(): number {
+    return this.scheduleAheadS;
+  }
+
+  dispose(): void {
+    this.stop();
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
   private tick(): void {
