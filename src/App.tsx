@@ -40,7 +40,13 @@ export default function App() {
         dispatch={dispatch}
       />
       <MeterControls pattern={state.settings.pattern} dispatch={dispatch} />
-      <PatternGrid pattern={state.settings.pattern} dispatch={dispatch} />
+      <PatternGrid
+          pattern={state.settings.pattern}
+          bpm={state.settings.bpm}
+          engine={engine}
+          isPlaying={engine.isPlaying()}
+          dispatch={dispatch}
+        />
     </main>
   );
 }
