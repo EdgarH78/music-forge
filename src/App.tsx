@@ -6,6 +6,7 @@ import { useMetronomeEngine, useSyncEngine } from './hooks/useEngineSync';
 import { TransportControls } from './components/TransportControls';
 import { MeterControls } from './components/MeterControls';
 import { PatternGrid } from './components/PatternGrid';
+import { PatternLibrary } from './components/PatternLibrary';
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -47,6 +48,11 @@ export default function App() {
           isPlaying={engine.isPlaying()}
           dispatch={dispatch}
         />
+      <PatternLibrary
+        library={state.library}
+        currentPatternName={state.settings.pattern.name}
+        dispatch={dispatch}
+      />
     </main>
   );
 }
