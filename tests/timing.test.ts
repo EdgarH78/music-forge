@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { stepDurationSeconds, stepsPerBar, isDownbeat } from '../src/domain/timing';
+import {
+  stepDurationSeconds,
+  stepsPerBar,
+  isDownbeat,
+  defaultPatternLength,
+  resizePattern,
+  clampBpm,
+  clampVolume,
+} from '../src/domain/timing';
+import type { StepState } from '../src/domain/types';
 
 describe('stepDurationSeconds', () => {
   it('returns 0.125 for 120 BPM, 1/16 subdivision', () => {
@@ -56,5 +65,62 @@ describe('isDownbeat', () => {
 
   it('step 7 in 7/8 with 1/16 is NOT downbeat', () => {
     expect(isDownbeat(7, { num: 7, den: 8 }, 16)).toBe(false);
+  });
+});
+
+describe('defaultPatternLength', () => {
+  it('matches stepsPerBar', () => {
+    expect(defaultPatternLength({ num: 4, den: 4 }, 16)).toBe(16);
+    expect(defaultPatternLength({ num: 7, den: 8 }, 16)).toBe(14);
+    expect(defaultPatternLength({ num: 5, den: 4 }, 8)).toBe(10);
+  });
+});
+
+describe('resizePattern', () => {
+  const steps: StepState[] = ['normal', 'mute', 'accent', 'mute'];
+
+  it('returns same array when length unchanged', () => {
+    expect(resizePattern(steps, 4)).toEqual(steps);
+  });
+
+  it('truncates from end when shrinking', () => {
+    expect(resizePattern(steps, 2)).toEqual(['normal', 'mute']);
+  });
+
+  it('pads with mute when growing', () => {
+    expect(resizePattern(steps, 6)).toEqual(['normal', 'mute', 'accent', 'mute', 'mute', 'mute']);
+  });
+
+  it('result length always equals new length', () => {
+    expect(resizePattern(steps, 0)).toHaveLength(0);
+    expect(resizePattern(steps, 100)).toHaveLength(100);
+  });
+});
+
+describe('clampBpm', () => {
+  it('clamps below 30 to 30', () => {
+    expect(clampBpm(10)).toBe(30);
+  });
+  it('clamps above 300 to 300', () => {
+    expect(clampBpm(500)).toBe(300);
+  });
+  it('passes through values in range', () => {
+    expect(clampBpm(120)).toBe(120);
+    expect(clampBpm(95.5)).toBe(95.5);
+  });
+  it('NaN coerces to 30', () => {
+    expect(clampBpm(NaN)).toBe(30);
+  });
+});
+
+describe('clampVolume', () => {
+  it('clamps below 0 to 0', () => {
+    expect(clampVolume(-0.5)).toBe(0);
+  });
+  it('clamps above 1 to 1', () => {
+    expect(clampVolume(1.5)).toBe(1);
+  });
+  it('passes through values in range', () => {
+    expect(clampVolume(0.7)).toBe(0.7);
   });
 });
