@@ -1,0 +1,25 @@
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #22262e;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  gap: 0.25rem;
+}
+
+.field input, .field select {
+  padding: 0.25rem 0.5rem;
+  background: #1a1d23;
+  color: #e6e6e6;
+  border: 1px solid #3a3f48;
+  border-radius: 4px;
+  min-width: 80px;
+}
