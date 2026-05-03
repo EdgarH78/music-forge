@@ -32,3 +32,13 @@ export function clampVolume(v: number): number {
   if (Number.isNaN(v)) return 0;
   return Math.max(0, Math.min(1, v));
 }
+
+export function isValidMeter(timeSig: TimeSig, subdivision: Subdivision): boolean {
+  if (timeSig.num <= 0) return false;
+  // subdivision >= den, both powers of 2 in {1,2,4,8,16}, ensures integer stepsPerBar
+  return subdivision >= timeSig.den;
+}
+
+export function makeId(): string {
+  return crypto.randomUUID();
+}

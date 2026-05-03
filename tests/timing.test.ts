@@ -7,6 +7,8 @@ import {
   resizePattern,
   clampBpm,
   clampVolume,
+  isValidMeter,
+  makeId,
 } from '../src/domain/timing';
 import type { StepState } from '../src/domain/types';
 
@@ -122,5 +124,35 @@ describe('clampVolume', () => {
   });
   it('passes through values in range', () => {
     expect(clampVolume(0.7)).toBe(0.7);
+  });
+});
+
+describe('isValidMeter', () => {
+  it('accepts subdivision >= den', () => {
+    expect(isValidMeter({ num: 4, den: 4 }, 16)).toBe(true);
+    expect(isValidMeter({ num: 4, den: 4 }, 4)).toBe(true);
+    expect(isValidMeter({ num: 7, den: 8 }, 16)).toBe(true);
+    expect(isValidMeter({ num: 7, den: 8 }, 8)).toBe(true);
+  });
+
+  it('rejects subdivision < den (would yield non-integer stepsPerBar)', () => {
+    expect(isValidMeter({ num: 7, den: 8 }, 4)).toBe(false);
+    expect(isValidMeter({ num: 4, den: 4 }, 2)).toBe(false);
+  });
+
+  it('rejects num <= 0', () => {
+    expect(isValidMeter({ num: 0, den: 4 }, 16)).toBe(false);
+    expect(isValidMeter({ num: -1, den: 4 }, 16)).toBe(false);
+  });
+});
+
+describe('makeId', () => {
+  it('returns a non-empty string', () => {
+    expect(typeof makeId()).toBe('string');
+    expect(makeId().length).toBeGreaterThan(0);
+  });
+
+  it('returns different ids on consecutive calls', () => {
+    expect(makeId()).not.toBe(makeId());
   });
 });
