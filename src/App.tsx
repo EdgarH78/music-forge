@@ -7,6 +7,7 @@ import { TransportControls } from './components/TransportControls';
 import { MeterControls } from './components/MeterControls';
 import { PatternGrid } from './components/PatternGrid';
 import { PatternLibrary } from './components/PatternLibrary';
+import { KeyboardHandler } from './components/KeyboardHandler';
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -53,6 +54,7 @@ export default function App() {
         currentPatternName={state.settings.pattern.name}
         dispatch={dispatch}
       />
+      <KeyboardHandler bpm={state.settings.bpm} onPlayToggle={togglePlay} dispatch={dispatch} />
     </main>
   );
 }
