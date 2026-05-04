@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173 (or 5174 if 5173 is in use).
+Open http://localhost:5174.
 
 ## Test
 
