@@ -7,6 +7,12 @@
   overflow-x: auto;
 }
 
+.hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  color: #9aa0aa;
+}
+
 .cells {
   display: flex;
   gap: 4px;

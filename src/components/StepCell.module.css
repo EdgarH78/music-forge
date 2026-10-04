@@ -23,4 +23,7 @@
 
 .downbeatBorder { border-left: 3px solid #50c878; }
 
+/* Traditional mode: the grid shows the click, it isn't editable. */
+.readOnly { cursor: default; }
+
 .number { pointer-events: none; }

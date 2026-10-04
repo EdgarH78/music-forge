@@ -5,6 +5,7 @@ import type { Pattern } from '../src/domain/types';
 const mkPattern = (name: string): Pattern => ({
   id: 'id-' + name,
   name,
+  mode: 'custom',
   timeSig: { num: 4, den: 4 },
   subdivision: 16,
   length: 16,
@@ -24,6 +25,15 @@ describe('persistence', () => {
     const patterns = [mkPattern('A'), mkPattern('B')];
     saveLibrary(patterns);
     expect(loadLibrary()).toEqual(patterns);
+  });
+
+  it('defaults legacy patterns (saved before mode existed) to custom', () => {
+    const { mode: _omitted, ...legacy } = mkPattern('Old');
+    localStorage.setItem(
+      LIBRARY_STORAGE_KEY,
+      JSON.stringify({ version: 1, patterns: [legacy] })
+    );
+    expect(loadLibrary()[0].mode).toBe('custom');
   });
 
   it('returns [] for corrupt JSON', () => {

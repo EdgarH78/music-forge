@@ -62,9 +62,80 @@ describe('setSubdivision', () => {
     expect(next.settings.pattern.length).toBe(8);
   });
 
-  it('rejects invalid (subdivision < den)', () => {
+  it('allows coarser subdivisions that still divide the bar (4/4 in half notes)', () => {
     const next = reducer(initialState, { type: 'setSubdivision', subdivision: 2 });
-    expect(next).toBe(initialState);
+    expect(next.settings.pattern.subdivision).toBe(2);
+    expect(next.settings.pattern.length).toBe(2);
+  });
+
+  it('rejects subdivisions that would split the bar unevenly', () => {
+    const threeFour = reducer(initialState, { type: 'setTimeSig', timeSig: { num: 3, den: 4 } });
+    const next = reducer(threeFour, { type: 'setSubdivision', subdivision: 1 });
+    expect(next).toBe(threeFour);
+  });
+});
+
+describe('traditional mode', () => {
+  const traditional = reducer(initialState, { type: 'setMode', mode: 'traditional' });
+
+  it('fills every step of the bar when switching in', () => {
+    expect(traditional.settings.pattern.mode).toBe('traditional');
+    expect(traditional.settings.pattern.steps.every((s) => s === 'normal')).toBe(true);
+    expect(traditional.settings.pattern.steps).toHaveLength(16); // 4/4 at 1/16 from initialState
+    expect(traditional.settings.pattern.length).toBe(16);
+  });
+
+  it('is a no-op when already in that mode', () => {
+    expect(reducer(traditional, { type: 'setMode', mode: 'traditional' })).toBe(traditional);
+  });
+
+  it('refills the bar when the click note changes', () => {
+    const quarters = reducer(traditional, { type: 'setSubdivision', subdivision: 4 });
+    expect(quarters.settings.pattern.steps).toEqual(['normal', 'normal', 'normal', 'normal']);
+    expect(quarters.settings.pattern.length).toBe(4);
+  });
+
+  it('supports whole- and half-note clicks in 4/4', () => {
+    const halves = reducer(traditional, { type: 'setSubdivision', subdivision: 2 });
+    expect(halves.settings.pattern.steps).toEqual(['normal', 'normal']);
+
+    const wholes = reducer(traditional, { type: 'setSubdivision', subdivision: 1 });
+    expect(wholes.settings.pattern.steps).toEqual(['normal']);
+  });
+
+  it('refills the bar when the time signature changes', () => {
+    const quarters = reducer(traditional, { type: 'setSubdivision', subdivision: 4 });
+    const threeFour = reducer(quarters, { type: 'setTimeSig', timeSig: { num: 3, den: 4 } });
+    expect(threeFour.settings.pattern.steps).toEqual(['normal', 'normal', 'normal']);
+  });
+
+  it('ignores step edits and manual length changes', () => {
+    expect(reducer(traditional, { type: 'cycleStep', index: 0 })).toBe(traditional);
+    expect(reducer(traditional, { type: 'setStep', index: 0, state: 'mute' })).toBe(traditional);
+    expect(reducer(traditional, { type: 'setPatternLength', length: 32 })).toBe(traditional);
+  });
+
+  it('switching back to custom keeps the clicks as an editable starting point', () => {
+    const custom = reducer(traditional, { type: 'setMode', mode: 'custom' });
+    expect(custom.settings.pattern.mode).toBe('custom');
+    expect(custom.settings.pattern.steps).toEqual(traditional.settings.pattern.steps);
+    expect(reducer(custom, { type: 'cycleStep', index: 0 }).settings.pattern.steps[0]).toBe('accent');
+  });
+
+  it('round-trips through the library', () => {
+    const quarters = reducer(traditional, { type: 'setSubdivision', subdivision: 4 });
+    const saved = reducer(quarters, { type: 'savePattern', name: 'Plain 4/4' });
+    const reset = reducer(saved, { type: 'setMode', mode: 'custom' });
+    const loaded = reducer(reset, { type: 'loadPattern', id: saved.library[0].id });
+    expect(loaded.settings.pattern.mode).toBe('traditional');
+    expect(loaded.settings.pattern.steps).toEqual(['normal', 'normal', 'normal', 'normal']);
+  });
+
+  it('newPattern stays in traditional mode with a quarter-note click', () => {
+    const fresh = reducer(traditional, { type: 'newPattern' });
+    expect(fresh.settings.pattern.mode).toBe('traditional');
+    expect(fresh.settings.pattern.subdivision).toBe(4);
+    expect(fresh.settings.pattern.steps).toEqual(['normal', 'normal', 'normal', 'normal']);
   });
 });
 
@@ -197,6 +268,7 @@ describe('libraryLoaded', () => {
     const fake: Pattern = {
       id: 'fake-id',
       name: 'Loaded',
+      mode: 'custom',
       timeSig: { num: 4, den: 4 },
       subdivision: 16,
       length: 16,

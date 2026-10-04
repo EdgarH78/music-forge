@@ -6,6 +6,7 @@ import type { Pattern } from '../src/domain/types';
 const mkPattern = (steps: Pattern['steps']): Pattern => ({
   id: 'p',
   name: '',
+  mode: 'custom',
   timeSig: { num: 4, den: 4 },
   subdivision: 16,
   length: steps.length,
@@ -22,7 +23,7 @@ describe('MetronomeEngine scheduling', () => {
     const engine = new MetronomeEngine(ctx as unknown as AudioContext);
     engine.setBpm(120);
     engine.setPattern({
-      id: 'p', name: '', timeSig: { num: 4, den: 4 }, subdivision: 16,
+      id: 'p', name: '', mode: 'custom', timeSig: { num: 4, den: 4 }, subdivision: 16,
       length: 4, steps: ['normal', 'mute', 'accent', 'mute'],
     });
 
@@ -47,7 +48,7 @@ describe('MetronomeEngine scheduling', () => {
     const engine = new MetronomeEngine(ctx as unknown as AudioContext);
     engine.setBpm(120);
     engine.setPattern({
-      id: 'p', name: '', timeSig: { num: 4, den: 4 }, subdivision: 16,
+      id: 'p', name: '', mode: 'custom', timeSig: { num: 4, den: 4 }, subdivision: 16,
       length: 4, steps: ['normal', 'mute', 'accent', 'mute'],
     });
 
@@ -68,7 +69,7 @@ describe('MetronomeEngine scheduling', () => {
     const engine = new MetronomeEngine(ctx as unknown as AudioContext);
     engine.setBpm(120);
     engine.setPattern({
-      id: 'p', name: '', timeSig: { num: 4, den: 4 }, subdivision: 16,
+      id: 'p', name: '', mode: 'custom', timeSig: { num: 4, den: 4 }, subdivision: 16,
       length: 8,
       steps: ['normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal'],
     });

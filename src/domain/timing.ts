@@ -35,8 +35,15 @@ export function clampVolume(v: number): number {
 
 export function isValidMeter(timeSig: TimeSig, subdivision: Subdivision): boolean {
   if (timeSig.num <= 0) return false;
-  // subdivision >= den, both powers of 2 in {1,2,4,8,16}, ensures integer stepsPerBar
-  return subdivision >= timeSig.den;
+  // The bar must divide into a whole number of steps. Subdivisions coarser than
+  // the beat unit are fine when they still fit (4/4 in half notes = 2 steps),
+  // but not when they don't (3/4 in whole notes = 0.75 steps).
+  return Number.isInteger(stepsPerBar(timeSig, subdivision));
+}
+
+/** One bar of steps that all sound — the traditional-mode pattern. */
+export function traditionalSteps(timeSig: TimeSig, subdivision: Subdivision): StepState[] {
+  return Array(stepsPerBar(timeSig, subdivision)).fill('normal' as StepState);
 }
 
 export function makeId(): string {

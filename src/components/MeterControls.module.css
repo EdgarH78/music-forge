@@ -15,6 +15,36 @@
   gap: 0.25rem;
 }
 
+.modeToggle {
+  display: flex;
+  border: 1px solid #3a3f48;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.modeButton {
+  padding: 0.25rem 0.75rem;
+  background: #1a1d23;
+  color: #9aa0aa;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.modeButton + .modeButton {
+  border-left: 1px solid #3a3f48;
+}
+
+.modeActive {
+  background: #4a90e2;
+  color: #fff;
+}
+
+.modeButton:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+}
+
 .field input, .field select {
   padding: 0.25rem 0.5rem;
   background: #1a1d23;

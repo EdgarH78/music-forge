@@ -1,7 +1,8 @@
 import styles from './MeterControls.module.css';
 import { isValidMeter } from '../domain/timing';
+import { SUBDIV_LABEL } from '../domain/labels';
 import type { Action } from '../state/actions';
-import type { Pattern, Subdivision, Denominator } from '../domain/types';
+import type { Pattern, PatternMode, Subdivision, Denominator } from '../domain/types';
 
 interface Props {
   pattern: Pattern;
@@ -11,11 +12,33 @@ interface Props {
 const SUBDIVISIONS: Subdivision[] = [1, 2, 4, 8, 16];
 const DENOMINATORS: Denominator[] = [1, 2, 4, 8, 16];
 
-const SUBDIV_LABEL: Record<Subdivision, string> = { 1: 'Whole', 2: '1/2', 4: '1/4', 8: '1/8', 16: '1/16' };
+const MODES: { value: PatternMode; label: string }[] = [
+  { value: 'traditional', label: 'Traditional' },
+  { value: 'custom', label: 'Custom' },
+];
 
 export function MeterControls({ pattern, dispatch }: Props) {
+  const traditional = pattern.mode === 'traditional';
+
   return (
     <section className={styles.meter}>
+      <div className={styles.field}>
+        Mode
+        <div className={styles.modeToggle} role="group" aria-label="Pattern mode">
+          {MODES.map((m) => (
+            <button
+              key={m.value}
+              type="button"
+              className={`${styles.modeButton} ${pattern.mode === m.value ? styles.modeActive : ''}`}
+              aria-pressed={pattern.mode === m.value}
+              onClick={() => dispatch({ type: 'setMode', mode: m.value })}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <label className={styles.field}>
         Beats per bar
         <input
@@ -48,7 +71,7 @@ export function MeterControls({ pattern, dispatch }: Props) {
       </label>
 
       <label className={styles.field}>
-        Step note
+        {traditional ? 'Click note' : 'Step note'}
         <select
           value={pattern.subdivision}
           onChange={(e) => dispatch({ type: 'setSubdivision', subdivision: Number(e.target.value) as Subdivision })}
@@ -61,16 +84,18 @@ export function MeterControls({ pattern, dispatch }: Props) {
         </select>
       </label>
 
-      <label className={styles.field}>
-        Pattern length
-        <input
-          type="number"
-          min={1}
-          max={256}
-          value={pattern.length}
-          onChange={(e) => dispatch({ type: 'setPatternLength', length: Number(e.target.value) || 1 })}
-        />
-      </label>
+      {!traditional && (
+        <label className={styles.field}>
+          Pattern length
+          <input
+            type="number"
+            min={1}
+            max={256}
+            value={pattern.length}
+            onChange={(e) => dispatch({ type: 'setPatternLength', length: Number(e.target.value) || 1 })}
+          />
+        </label>
+      )}
     </section>
   );
 }

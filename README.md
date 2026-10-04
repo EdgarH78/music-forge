@@ -2,6 +2,15 @@
 
 Browser-based metronome with custom rhythm patterns, three synthesized voices (downbeat / accent / normal), and a DOM-based scanline animation through an editable pattern grid. Timing via the Web Audio API lookahead-scheduler pattern.
 
+## Modes
+
+- **Traditional** — a plain metronome: pick the time signature and the click note (whole, 1/2, 1/4, 1/8, 1/16) and every note of that value sounds, one bar long, with the downbeat accented. The grid is read-only.
+- **Custom** — the full step sequencer: any pattern length up to 256 steps, each step cycling mute → normal → accent.
+
+Switching Traditional → Custom keeps the generated clicks as an editable starting point. Mode is saved with the pattern.
+
+Note values coarser than the beat unit are allowed whenever they divide the bar evenly (half notes in 4/4 = 2 clicks), and disabled when they don't (whole notes in 3/4).
+
 ## Run
 
 ```bash

@@ -1,7 +1,8 @@
-import type { Pattern, StepState, Subdivision, TimeSig } from '../domain/types';
+import type { Pattern, PatternMode, StepState, Subdivision, TimeSig } from '../domain/types';
 
 export type Action =
   | { type: 'setBpm'; bpm: number }
+  | { type: 'setMode'; mode: PatternMode }
   | { type: 'setMasterVolume'; volume: number }
   | { type: 'setTimeSig'; timeSig: TimeSig }
   | { type: 'setSubdivision'; subdivision: Subdivision }

@@ -5,6 +5,7 @@ import {
   isDownbeat,
   defaultPatternLength,
   resizePattern,
+  traditionalSteps,
   clampBpm,
   clampVolume,
   isValidMeter,
@@ -135,14 +136,32 @@ describe('isValidMeter', () => {
     expect(isValidMeter({ num: 7, den: 8 }, 8)).toBe(true);
   });
 
-  it('rejects subdivision < den (would yield non-integer stepsPerBar)', () => {
+  it('accepts coarser subdivisions that still divide the bar evenly', () => {
+    expect(isValidMeter({ num: 4, den: 4 }, 2)).toBe(true); // half notes in 4/4 = 2 steps
+    expect(isValidMeter({ num: 4, den: 4 }, 1)).toBe(true); // whole note in 4/4 = 1 step
+    expect(isValidMeter({ num: 6, den: 8 }, 4)).toBe(true); // quarters in 6/8 = 3 steps
+  });
+
+  it('rejects meters that would yield a fractional stepsPerBar', () => {
     expect(isValidMeter({ num: 7, den: 8 }, 4)).toBe(false);
-    expect(isValidMeter({ num: 4, den: 4 }, 2)).toBe(false);
+    expect(isValidMeter({ num: 3, den: 4 }, 1)).toBe(false);
+    expect(isValidMeter({ num: 5, den: 8 }, 2)).toBe(false);
   });
 
   it('rejects num <= 0', () => {
     expect(isValidMeter({ num: 0, den: 4 }, 16)).toBe(false);
     expect(isValidMeter({ num: -1, den: 4 }, 16)).toBe(false);
+  });
+});
+
+describe('traditionalSteps', () => {
+  it('fills one bar with sounding steps', () => {
+    expect(traditionalSteps({ num: 4, den: 4 }, 4)).toEqual(['normal', 'normal', 'normal', 'normal']);
+    expect(traditionalSteps({ num: 6, den: 8 }, 8)).toHaveLength(6);
+  });
+
+  it('yields one step per bar for a whole-note click in 4/4', () => {
+    expect(traditionalSteps({ num: 4, den: 4 }, 1)).toEqual(['normal']);
   });
 });
 

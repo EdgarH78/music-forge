@@ -8,9 +8,17 @@ export interface TimeSig {
   den: Denominator;     // denominator (power of 2 in {1,2,4,8,16})
 }
 
+/**
+ * 'custom'      — steps are hand-edited on the grid.
+ * 'traditional' — a plain metronome: every step of the chosen note value
+ *                 sounds, one bar long, downbeat accented automatically.
+ */
+export type PatternMode = 'traditional' | 'custom';
+
 export interface Pattern {
   id: string;
   name: string;
+  mode: PatternMode;
   timeSig: TimeSig;
   subdivision: Subdivision;
   length: number;       // invariant: equals steps.length
