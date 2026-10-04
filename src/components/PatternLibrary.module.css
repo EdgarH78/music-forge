@@ -1,0 +1,59 @@
+.library {
+  padding: 1rem;
+  background: #22262e;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.nameInput {
+  flex: 1;
+  padding: 0.5rem;
+  background: #1a1d23;
+  color: #e6e6e6;
+  border: 1px solid #3a3f48;
+  border-radius: 4px;
+}
+
+.row button {
+  padding: 0.5rem 1rem;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+.row button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.list {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.item {
+  display: flex;
+  background: #1a1d23;
+  border: 1px solid #3a3f48;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.loadBtn, .deleteBtn {
+  background: transparent;
+  color: #e6e6e6;
+  border: none;
+  padding: 0.4rem 0.75rem;
+}
+
+.loadBtn:hover { background: #2a2e36; }
+
+.deleteBtn { color: #c66; }
+.deleteBtn:hover { background: #4a1a1a; }
